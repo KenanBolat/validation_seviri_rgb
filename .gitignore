@@ -140,3 +140,5 @@ cython_debug/
 #Pycharm 
 .DS_Store
 .idea
+*.png
+*.PNG

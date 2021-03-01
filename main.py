@@ -4,30 +4,30 @@ from pyspectral import near_infrared_reflectance
 import pprint
 from satpy import Scene
 import datetime
-import os 
-import glob 
+import os
+import glob
+from satpy.writers import compute_writer_results
 
 start = datetime.datetime.now()
-
 pprint.pprint(available_readers())
+process_path = r"/media/knn/F/validation_2020/msg_rgb_data/extracted"
+dates = list(set([f.split("_")[4][0:8] for f in glob.glob1(process_path, "*.nc")]))
 
-
-date_ = "20200218"
-hour_ = "1200"
-process_path = r"C:\Users\knn\Data\MSG"
-
-files = [os.path.join(process_path, row) for row in glob.glob1(process_path, "W_XX*"+date_+hour_+"*.nc")]
-
-print(files)
-scn = Scene(reader="seviri_l1b_nc", filenames=files)
-pprint.pprint(scn.available_composite_names())
-scn.load(['natural_color'], calibrations=[ 'radiance'])
-scn.show("natural_color")
-# scn.load(['day_microphysics_winter'], calibrations=['radiance'])
-# scn.show("day_microphysics_winter")
-
-# scn.load(['realistic_colors'], calibrations=[ 'radiance'])
-# scn.show("realistic_colors")
-
-# end = datetime.datetime.now()
-# print("Duration is : ", str(end-start))
+for date_ in dates:
+    # date_ = "20200220"
+    hour_ = "1200"
+    files = [os.path.join(process_path, row) for row in glob.glob1(process_path, "W_XX*" + date_ + hour_ + "*.nc")]
+    print(date_, files)
+    scn = Scene(reader="seviri_l1b_nc", filenames=files)
+    pprint.pprint(scn.available_composite_names())
+    scn.load(['natural_color', 'snow', 'natural_enh'], calibrations=['radiance'])
+    # scn.show("natural_color")
+    # scn.show("snow")
+    # scn.show("natural_enh")
+    if not os.path.exists(os.path.join(r"outputs", date_)):
+        os.mkdir(os.path.join(r"outputs", date_))
+    a = scn.save_datasets(
+        filename='{name}_{start_time:%Y%m%d_%H%M%S}.png', base_dir=os.path.join(r"outputs", date_))
+    # break
+end = datetime.datetime.now()
+print("Duration is : ", str(end - start))
