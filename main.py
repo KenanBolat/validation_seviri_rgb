@@ -20,7 +20,7 @@ for date_ in dates:
     print(date_, files)
     scn = Scene(reader="seviri_l1b_nc", filenames=files)
     pprint.pprint(scn.available_composite_names())
-    scn.load(['natural_color', 'snow', 'natural_enh'], calibrations=['radiance'])
+    scn.load(['natural_color', 'snow'], calibrations=['radiance'])
     # scn.show("natural_color")
     # scn.show("snow")
     # scn.show("natural_enh")
